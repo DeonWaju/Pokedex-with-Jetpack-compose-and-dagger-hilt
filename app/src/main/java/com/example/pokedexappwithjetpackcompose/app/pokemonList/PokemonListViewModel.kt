@@ -33,6 +33,10 @@ class PokemonListViewModel @Inject constructor(
     var endReached = mutableStateOf(false)
 
 
+    init {
+        loadPokemonPaginated()
+    }
+
     fun loadPokemonPaginated() {
         viewModelScope.launch {
             isLoading.value = true
@@ -45,9 +49,10 @@ class PokemonListViewModel @Inject constructor(
                         val number = if (entry.url.endsWith("/")) {
                             entry.url.dropLast(1).takeLastWhile { it.isDigit() }
                         } else {
-                            entry.url.takeLastWhile{ it.isDigit() }
+                            entry.url.takeLastWhile { it.isDigit() }
                         }
-                        val url = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${number}.png"
+                        val url =
+                            "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${number}.png"
                         PokemonListEntry(entry.name.capitalize(Locale.ROOT), url, number.toInt())
                     }
                     currentPage++
