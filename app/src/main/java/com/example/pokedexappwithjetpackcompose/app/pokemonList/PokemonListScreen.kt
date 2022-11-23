@@ -8,12 +8,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -146,6 +144,20 @@ fun PokemonList(
             )
         }
     }
+
+    Box(
+        contentAlignment = Center,
+        modifier = Modifier.fillMaxSize()
+    ) {
+        if(isLoading) {
+            CircularProgressIndicator(color = MaterialTheme.colors.primary)
+        }
+        if(loadingError.isNotEmpty()) {
+            RetrySection(error = loadingError) {
+                viewModel.loadPokemonPaginated()
+            }
+        }
+    }
 }
 
 @Composable
@@ -184,11 +196,6 @@ fun PokedexEntry(
             SubcomposeAsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
                     .data(entry.imageUrl)
-//                    .target {
-//                        viewModel.calcDominantColor(it) { color ->
-//                            dominantColor = color
-//                        }
-//                    }
                     .crossfade(true)
                     .build(),
                 loading = {
@@ -239,5 +246,22 @@ fun PokedexRow(
             }
         }
         Spacer(modifier = Modifier.height(16.dp))
+    }
+}
+
+@Composable
+fun RetrySection(
+    error: String,
+    onRetry: () -> Unit
+) {
+    Column {
+        Text(error, color = Color.Red, fontSize = 18.sp)
+        Spacer(modifier = Modifier.height(8.dp))
+        Button(
+            onClick = { onRetry() },
+            modifier = Modifier.align(CenterHorizontally)
+        ) {
+            Text(text = "Retry")
+        }
     }
 }
