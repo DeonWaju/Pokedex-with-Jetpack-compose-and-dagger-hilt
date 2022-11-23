@@ -13,6 +13,7 @@ import com.example.pokedexappwithjetpackcompose.repository.PokemonRepository
 import com.example.pokedexappwithjetpackcompose.util.Constants.PAGE_SIZE
 import com.example.pokedexappwithjetpackcompose.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.*
 import javax.inject.Inject
@@ -32,9 +33,39 @@ class PokemonListViewModel @Inject constructor(
     var isLoading = mutableStateOf(false)
     var endReached = mutableStateOf(false)
 
+    private var cachedPokemonList = listOf<PokemonListEntry>()
+    private var isSearchEmpty = true
+    var isSearching = mutableStateOf(false)
+
 
     init {
         loadPokemonPaginated()
+    }
+
+    fun searchPokemonList(query: String) {
+        val listToSearch = if (isSearchEmpty) {
+            pokemonList.value
+        } else {
+            cachedPokemonList
+        }
+
+        viewModelScope.launch(Dispatchers.Default) {
+            if (query.isEmpty()){
+                pokemonList.value = cachedPokemonList
+                isSearching.value = false
+                isSearchEmpty = true
+                return@launch
+            }
+            val result = listToSearch.filter {
+                it.pokemonName.contains(query.trim(), ignoreCase = true) ||
+                it.number.toString() == query.trim()
+            }
+            if (isSearchEmpty) {
+                cachedPokemonList = pokemonList.value
+                isSearchEmpty = false
+            }
+            pokemonList.value = result
+        }
     }
 
     fun loadPokemonPaginated() {
