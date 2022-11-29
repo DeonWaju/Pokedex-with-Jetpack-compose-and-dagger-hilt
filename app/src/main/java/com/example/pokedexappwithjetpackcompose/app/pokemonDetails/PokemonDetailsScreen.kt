@@ -1,6 +1,8 @@
 package com.example.pokedexappwithjetpackcompose.app.pokemonDetails
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.produceState
 import androidx.compose.ui.Modifier
@@ -29,16 +31,9 @@ fun pokemonDetailsScreen(
     }.value
     Box(modifier = Modifier
         .fillMaxSize()
-        .background(dominantColor)
         .padding(bottom = 16.dp)
     ) {
-        PokemonDetailTopSection(
-            navController = navController,
-            modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight(0.2f)
-                .align(Alignment.TopCenter)
-        )
+
     }
 
 }
